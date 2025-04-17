@@ -232,4 +232,3 @@ def calculate_error_rate(transcript: str) -> float:
 def analyze_discourse(transcript: str) -> float:
     """Placeholder: Analyzes discourse competence."""
     return 0.6 # Placeholder value
-
