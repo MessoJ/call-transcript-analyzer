@@ -1,8 +1,7 @@
 import os
 from src.quality_assessment import assess_call_quality
 from src.proficiency_assessment import assess_english_level
-# Import the visualization function if you want to run it from here
-# from notebooks.proficiency_visualization import generate_proficiency_graph
+from notebooks.proficiency_visualization import generate_proficiency_graph
 
 def process_transcript(transcript_text: str):
     """
@@ -13,11 +12,11 @@ def process_transcript(transcript_text: str):
     """
     print("-" * 30)
     print("Processing Transcript:")
-    # Basic preview of the transcript
+    # the preview of the transcript
     print(f"\"{transcript_text[:100]}...\"")
     print("-" * 30)
 
-    # 1. Assess Quality
+    # 1. To assess quality
     print("\nAssessing Quality...")
     quality_result = assess_call_quality(transcript_text)
     if quality_result:
@@ -26,22 +25,22 @@ def process_transcript(transcript_text: str):
         print(f"  Quality Ratio: {quality_result.get('quality_ratio'):.2f}")
         if not quality_result.get('is_good_quality'):
             print(f"  Rejection Reasons: {quality_result.get('rejection_reasons')}")
-        # Optional: Print detailed metrics
-        # print("  Detailed Metrics:", quality_result.get('metrics'))
+        # to print detailed metrics
+         print("  Detailed Metrics:", quality_result.get('metrics'))
     else:
         print("  Could not assess quality.")
 
 
-    # 2. Assess English Proficiency
+    # 2. to assess English Proficiency
     print("\nAssessing English Proficiency...")
     proficiency_level = assess_english_level(transcript_text)
     print(f"  Estimated CEFR Level: {proficiency_level}")
 
     print("-" * 30)
 
-# --- Main Execution ---
+# ---The Main Execution ---
 if __name__ == "__main__":
-    # --- Option 1: Use a sample transcript ---
+    # --- Option 1: Use my sample transcript here to test ---
     sample_transcript = (
         "Agent: Thank you for calling Tech Support, this is Alex speaking. How may I help you today? "
         "User: Hi Alex, uhm, yes, my computer... it is not starting. It makes some noise, like beeps? "
@@ -54,7 +53,7 @@ if __name__ == "__main__":
     )
     process_transcript(sample_transcript)
 
-    # --- Option 2: Load transcript from a file (Example) ---
+    # --- Option 2: Load transcript from your file (Example 'uncomment below code') ---
     # transcript_file = "path/to/your/transcript.txt"
     # try:
     #     with open(transcript_file, 'r', encoding='utf-8') as f:
@@ -64,21 +63,6 @@ if __name__ == "__main__":
     #     print(f"\nError: Transcript file not found at {transcript_file}")
     # except Exception as e:
     #     print(f"\nError reading transcript file: {e}")
-
-
-    # --- Option 3: Generate the proficiency visualization (Optional) ---
-    # print("\nGenerating proficiency level visualization...")
-    # # Ensure the notebooks directory exists
-    # if not os.path.exists("notebooks"):
-    #     os.makedirs("notebooks")
-    # try:
-    #     # Make sure you have graphviz installed (system and pip package)
-    #     from notebooks.proficiency_visualization import generate_proficiency_graph
-    #     generate_proficiency_graph(output_filename="notebooks/proficiency_levels_output")
-    # except ImportError:
-    #     print("Could not import generate_proficiency_graph. Is it in the correct path?")
-    # except Exception as e:
-    #      print(f"Could not generate graph: {e}. Ensure Graphviz is installed.")
 
     print("\nScript finished.")
 
