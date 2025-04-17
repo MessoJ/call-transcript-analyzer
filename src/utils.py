@@ -1,12 +1,7 @@
-# src/utils.py
 # Helper functions for transcript analysis
-# Includes implementations for some functions using NLTK (stopwords, sent_tokenize) and VADER.
-# Replaced NLTK word_tokenize with regex due to persistent LookupErrors.
-
 import re
 import nltk
 import os
-# Removed word_tokenize import, kept sent_tokenize
 from nltk.tokenize import sent_tokenize
 from nltk.corpus import stopwords
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -15,7 +10,7 @@ import logging
 # --- Configure Logging ---
 logging.basicConfig(level=logging.WARNING)
 
-# --- Define NLTK Data Directory ---
+# --- to define NLTK Data Directory ---
 DATA_DIR = "/tmp/nltk_data"
 if not os.path.exists(DATA_DIR):
     try:
@@ -24,14 +19,14 @@ if not os.path.exists(DATA_DIR):
         print(f"Warning: Could not create NLTK data directory {DATA_DIR}. Error: {e}")
         DATA_DIR = None
 
-# --- Ensure NLTK searches our custom directory first ---
+# --- to ensure NLTK searches our custom directory first ---
 if DATA_DIR and DATA_DIR not in nltk.data.path:
     nltk.data.path.insert(0, DATA_DIR)
 
-# --- Download necessary NLTK data (run this once) ---
+# --- to download necessary NLTK data (run this once) ---
 def download_nltk_data(download_dir=None):
     """Downloads required NLTK data if not already present to the specified directory."""
-    # Keep punkt download attempt for sent_tokenize
+    
     required_data = [('tokenizers/punkt', 'punkt'), ('corpora/stopwords', 'stopwords')]
     for path, pkg_id in required_data:
         try:
@@ -43,11 +38,9 @@ def download_nltk_data(download_dir=None):
             except Exception as e:
                 print(f"ERROR: Failed to download NLTK data '{pkg_id}'. Error: {e}")
 
-# Call download function once at module load
-download_nltk_data(download_dir=DATA_DIR)
-# -----------------------------------------------------
 
-# Initialize VADER sentiment analyzer
+download_nltk_data(download_dir=DATA_DIR)
+
 try:
     analyzer = SentimentIntensityAnalyzer()
 except LookupError:
@@ -59,15 +52,15 @@ except LookupError:
         print(f"ERROR: Failed to download VADER lexicon. Error: {e}")
         analyzer = None
 
-# Define speaker patterns and noise words
+# to define speaker patterns and noise words
 SPEAKER_PATTERN = re.compile(r"^(Agent|User|Speaker \d+):", re.IGNORECASE | re.MULTILINE)
 NOISE_WORDS = set(['uh', 'uhm', 'umm', 'hmm', 'like', 'yeah', 'okay', 'so', 'well'])
-# Load English stopwords safely
+# to load English stopwords safely
 try:
     ENGLISH_STOPWORDS = set(stopwords.words('english'))
 except LookupError:
     print("Stopwords not found initially, attempting download again...")
-    download_nltk_data(download_dir=DATA_DIR) # Ensure stopwords are downloaded
+    download_nltk_data(download_dir=DATA_DIR) 
     try:
         ENGLISH_STOPWORDS = set(stopwords.words('english'))
     except Exception as e:
@@ -78,7 +71,7 @@ except LookupError:
 
 def regex_word_tokenize(text: str) -> list[str]:
     """Simple regex-based word tokenizer."""
-    # \b matches word boundaries, \w+ matches one or more alphanumeric characters
+    
     return re.findall(r'\b\w+\b', text.lower())
 
 def count_speaker_turns(transcript: str) -> int:
@@ -91,7 +84,7 @@ def count_speaker_turns(transcript: str) -> int:
 
 def get_utterances(transcript: str) -> list[str]:
     """Splits the transcript into a list of utterances based on speaker pattern."""
-    # (Implementation remains the same as before)
+    
     if not isinstance(transcript, str): return []
     utterances = []
     last_end = 0
@@ -114,7 +107,7 @@ def calculate_avg_utterance_length(transcript: str) -> float:
     if not utterances: return 0.0
     total_words, total_utterances = 0, 0
     for utt in utterances:
-        # Use simple split here is fine for average length
+       
         words_in_utterance = len(utt.split())
         if words_in_utterance > 0:
              total_words += words_in_utterance
@@ -125,9 +118,8 @@ def tokenize_and_clean(text: str) -> list[str]:
     """Helper function to tokenize text using regex, lowercase, and remove punctuation/stopwords."""
     if not isinstance(text, str): return []
     try:
-        # Use regex tokenizer instead of NLTK word_tokenize
+        
         tokens = regex_word_tokenize(text)
-        # Keep alphanumeric tokens (already handled by regex \w+) and remove stopwords/single chars
         return [word for word in tokens if word not in ENGLISH_STOPWORDS and len(word) > 1]
     except Exception as e:
         print(f"Error during regex tokenization/cleaning: {e}")
@@ -142,7 +134,7 @@ def detect_noise_words(transcript: str) -> int:
     """Detects the count of predefined noise/filler words using regex tokenizer."""
     if not isinstance(transcript, str): return 0
     try:
-        # Use regex tokenizer
+        #to use regex tokenizer
         tokens = regex_word_tokenize(transcript)
         noise_count = sum(1 for token in tokens if token in NOISE_WORDS)
         return noise_count
@@ -163,7 +155,7 @@ def analyze_sentiment(transcript: str) -> float:
         print(f"Error during sentiment analysis: {e}")
         return 0.0
 
-# --- Placeholder Functions ---
+# ---the  placeholder Functions ---
 
 def calculate_topic_relevance(transcript: str, expected_topic: str = "default") -> float:
     """Placeholder: Calculates topic relevance."""
@@ -171,8 +163,7 @@ def calculate_topic_relevance(transcript: str, expected_topic: str = "default") 
 
 def calculate_information_density(transcript: str) -> float:
     """Placeholder: Calculates information density."""
-    # Requires: nltk.download('averaged_perceptron_tagger', download_dir=DATA_DIR)
-    # Would also need POS tagging after tokenization (regex or NLTK)
+    
     return 0.5 # Placeholder value
 
 def analyze_syntax_complexity(transcript: str) -> float:
@@ -180,24 +171,24 @@ def analyze_syntax_complexity(transcript: str) -> float:
     if not isinstance(transcript, str) or not transcript.strip(): return 0.0
     sentences = []
     try:
-        # Try NLTK sentence tokenization first
+       
         sentences = sent_tokenize(transcript)
     except LookupError:
         print("Warning: NLTK 'punkt' data missing for sentence tokenization. Falling back to basic regex split.")
-        # Fallback to basic sentence split on ., ?, ! followed by space
+        
         sentences = re.split(r'[.?!]\s+', transcript)
-        sentences = [s for s in sentences if s] # Remove empty strings
+        sentences = [s for s in sentences if s] 
     except Exception as e:
          print(f"Error during NLTK sentence tokenization: {e}. Falling back to basic regex split.")
          sentences = re.split(r'[.?!]\s+', transcript)
-         sentences = [s for s in sentences if s] # Remove empty strings
+         sentences = [s for s in sentences if s] 
 
     if not sentences: return 0.0
 
     total_words, valid_sentences = 0, 0
     for s in sentences:
         try:
-            # Use regex word tokenizer here too
+            
             words = regex_word_tokenize(s)
             if words:
                 total_words += len(words)
@@ -208,7 +199,7 @@ def analyze_syntax_complexity(transcript: str) -> float:
 
     if valid_sentences == 0: return 0.0
     avg_len = total_words / valid_sentences
-    # Normalize score (e.g., map 5-25 words/sentence to 0-1)
+    # Normalize score 
     complexity_score = min(1.0, max(0.0, (avg_len - 5) / 20.0))
     return complexity_score
 
@@ -216,9 +207,9 @@ def analyze_syntax_complexity(transcript: str) -> float:
 def measure_fluency(transcript: str) -> float:
     """Measures fluency using filler word ratio (uses regex tokenizer via detect_noise_words)."""
     if not isinstance(transcript, str) or not transcript.strip(): return 0.0
-    total_words = len(transcript.split()) # Simple split is fine for total word count approx
+    total_words = len(transcript.split()) 
     if total_words == 0: return 1.0
-    # Uses detect_noise_words, which now uses regex tokenizer
+   
     filler_count = detect_noise_words(transcript)
     filler_ratio = filler_count / total_words
     fluency_score = max(0.0, 1.0 - (filler_ratio * 5))
@@ -226,7 +217,7 @@ def measure_fluency(transcript: str) -> float:
 
 def calculate_error_rate(transcript: str) -> float:
     """Placeholder: Calculates grammatical error rate."""
-    # Requires external tool like language_tool_python and potentially Java.
+    # this requires external tool like language_tool_python and Java.
     return 0.15 # Placeholder value
 
 def analyze_discourse(transcript: str) -> float:
