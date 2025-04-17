@@ -25,7 +25,7 @@ This project provides tools for analyzing call transcripts using Natural Languag
 
 ## Usage
 
-run directly from ``python main.py`` o
+run directly from ``python main.py`` 
 or
 
 Import the functions from the `src` modules into your Python scripts or notebooks.
