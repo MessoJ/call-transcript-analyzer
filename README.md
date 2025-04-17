@@ -25,14 +25,14 @@ This project provides tools for analyzing call transcripts using Natural Languag
 
 ## Usage
 
+run directly from ``python main.py`` o
+or
+
 Import the functions from the `src` modules into your Python scripts or notebooks.
 
 ```python
 from src.quality_assessment import assess_call_quality
 from src.proficiency_assessment import assess_english_level
-
-# Example transcript
-transcript = "Agent: Hello, thank you for calling. User: Hi, I need help with my account. Agent: Okay, I can help with that. What seems to be the problem? User: I forgot my password and cannot log in."
 
 # Assess quality
 quality_result = assess_call_quality(transcript)
